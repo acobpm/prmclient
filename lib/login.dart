@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
+import 'property_list.dart';
 
 const double _kPickerSheetHeight = 100.0;
 const double _kPickerItemHeight = 32.0;
-final List < String > _roleList = < String > ["Property Manager", "Landlord"];
-
+final List _roleList =[
+  {"role":"Property Manager","user":"Luke"},
+  {"role":"Landlord","user":"Mason"},
+];
 class LoginWidget extends StatefulWidget {
   @override
   createState() => new LoginState();
 }
 
 class LoginState extends State < LoginWidget > {
-  String _loginUser;
+  String _loginUser=_roleList[0]["user"];
 
   int _selectedItemIndex = 0;
   @override
@@ -76,7 +81,13 @@ class LoginState extends State < LoginWidget > {
           ),
            SizedBox(height: 40.0, ),
 
-          Center(child: Icon(Icons.power_settings_new , color: Colors.blue,size: 70.0, ),
+          Center(child: 
+            IconButton(
+              icon: Icon(Icons.power_settings_new , color: Colors.blue,size: 70.0),
+              onPressed: () {
+                _doLogin(_loginUser);
+              }
+            ),
             //  Center(
             //   child:  RaisedButton(
             //     child:  Text("Login",),
@@ -116,11 +127,15 @@ class LoginState extends State < LoginWidget > {
                 onSelectedItemChanged: (int index) {
                   setState(() {
                     _selectedItemIndex = index;
+                    var obj = _roleList[index];
+                    _loginUser =obj["user"];
                   });
                 },
                 children: new List < Widget > .generate(_roleList.length, (int index) {
+                  var obj =_roleList[index]; //json.decode(_roleList[index]);
+                  
                   return new Center(child:
-                    new Text(_roleList[index], style: new TextStyle(color: Colors.blue)),
+                    new Text(obj["role"], style: new TextStyle(color: Colors.blue)),
                   );
                 }),
               ),
@@ -130,13 +145,14 @@ class LoginState extends State < LoginWidget > {
     );
   }
   void _doLogin(String loginUser) async {
+    print(_loginUser);
     //var loginPerson = await getCouple(loginUser);
-    //if (loginPerson != null) {
-    // Navigator.push(
-    //     context,
-    //     new MaterialPageRoute(
-    //       builder: (BuildContext context) => new PromiseListWidget(loginPerson),
-    //     ));
-    //  }
+    if (loginUser != null) {
+    Navigator.push(
+        context,
+        new MaterialPageRoute(
+          builder: (BuildContext context) => new PropertyListWidget(loginUser),
+        ));
+     }
   }
 }
